@@ -8,35 +8,40 @@ const oneDay = 1000 * 60 * 60 * 24;
 const register = async (req, res) => {
   const { name, email, password } = req.body;
 
+
+  //Missing values
   if (!name || !email || !password) {
-    // next(new Error());  // If not using http-status-codes
+    
     throw new BadRequestError("Please provide all values");
   }
 
+
+  //Already exists
   const userAlreadyExists = await User.findOne({email});
 
   if(userAlreadyExists){
     throw new BadRequestError(`The email: ${email} is already in use.`);
   }
 
+
+  //if Correct data
   const user = await User.create({ name, email, password });
 
   const token = user.createToken();
-
+//create token
   res.cookie('token', token, {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
     secure: process.env.NODE_ENV === 'production',
   });
-
+//status code
   res.status(StatusCodes.CREATED).json({
     user: {
       email: user.email,
       lastName: user.lastName,
       location: user.location,
       name: user.name
-    }, 
-    location: user.location,
+    }
   });
 };
 
@@ -47,14 +52,13 @@ const login = async (req, res) => {
     throw new BadRequestError("Please provide all values");
   }
 
-  // Get the user in db whose email matches with the one from request
+  
   const user = await User.findOne({ email }).select('+password');
 
   if(!user) {
     throw new UnAuthenticatedError("Invalid Credentials");
   }
 
-  // Compare password
   const isPasswordCorrect = await user.comparePassword(password);
 
   if(!isPasswordCorrect) {
@@ -71,8 +75,7 @@ const login = async (req, res) => {
   user.password = undefined;
 
   res.status( StatusCodes.OK ).json({ 
-    user,
-    location: user.location 
+    user
   });
 };
 
@@ -111,7 +114,6 @@ const getCurrentUser = async (req, res) => {
   const user = await User.findOne({ _id: req.user.userId });
   res.status(StatusCodes.OK).json({ 
     user, 
-    location: user.location 
   });
 };
 

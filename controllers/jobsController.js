@@ -157,6 +157,28 @@ const deleteJob = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: 'Job removed successfully.' });
 };
 
+
+//Get job by Id
+const getJobById = async (req, res) => {
+  // 1. Extract job ID from the request
+  const { id: jobId } = req.params;
+
+  // 2. Find the job in the database
+  const job = await Job.findOne({ _id: jobId });
+
+  // 3. If job is not found, throw error
+  if (!job) {
+    throw new NotFoundError(`No job with id ${jobId}`);
+  }
+
+  // 4. Check permissions of the user who created the job
+  checkPermissions(req.user, job.createdBy);
+
+  // 5. Respond with 200 and a json containing the job
+  res.status(StatusCodes.OK).json({ job });
+};
+
+
 const showStats = async (req, res) => {
   let stats = await Job.aggregate([
     { $match: { createdBy: new mongoose.Types.ObjectId(req.user.userId) } },
@@ -210,4 +232,4 @@ const showStats = async (req, res) => {
   res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications });
 };
 
-export { createJob, getAllJobs, updateJob, deleteJob, showStats }
+export { createJob, getAllJobs, updateJob, deleteJob,getJobById,showStats }
