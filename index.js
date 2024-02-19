@@ -18,6 +18,9 @@ import connectDB from "./db/connect.js";
 import authRouter from "./routes/authRoutes.js";
 import jobsRouter from "./routes/jobsRoutes.js";
 
+//Reminder
+import { createReminder,getRemindersByUser } from "./controllers/reminderController.js";
+
 // Middleware
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
@@ -61,6 +64,10 @@ app.get("/api/v1", (req, res) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/jobs", authenticateUser, jobsRouter);
+
+
+app.post('/api/v1/reminders',authenticateUser, createReminder); // Create a new reminder
+app.get('/api/v1/reminders/:userId', getRemindersByUser);
 
 // Only for Deployment
 app.get("*", function (request, response) {
