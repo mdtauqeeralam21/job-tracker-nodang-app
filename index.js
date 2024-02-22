@@ -12,14 +12,17 @@ import "express-async-errors";
 import morgan from "morgan";
 
 // Database and Authentication
-import connectDB from "./db/connect.js";
+import connectDB from "./db/connect.js"; 
 
 // Routers
 import authRouter from "./routes/authRoutes.js";
 import jobsRouter from "./routes/jobsRoutes.js";
 
 //Reminder
-import { createReminder,getRemindersByUser } from "./controllers/reminderController.js";
+import {
+  createReminder,
+  getRemindersByUser,
+} from "./controllers/reminderController.js";
 
 // Middleware
 import notFoundMiddleware from "./middleware/not-found.js";
@@ -46,11 +49,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Only for Deployment
 app.use(express.static(path.resolve(__dirname, "./client/build")));
-app.use(
-  cors(
-  {origin: 'http://localhost:4200',
-  credentials: true})
-);
+//app.use(cors({  credentials: true }));
+
+ app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -65,9 +66,8 @@ app.get("/api/v1", (req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/jobs", authenticateUser, jobsRouter);
 
-
-app.post('/api/v1/reminders',authenticateUser, createReminder); // Create a new reminder
-app.get('/api/v1/reminders/:userId', getRemindersByUser);
+app.post("/api/v1/reminders", authenticateUser, createReminder); // Create a new reminder
+app.get("/api/v1/reminders/:userId", getRemindersByUser);
 
 // Only for Deployment
 app.get("*", function (request, response) {
