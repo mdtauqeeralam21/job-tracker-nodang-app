@@ -12,7 +12,7 @@ import "express-async-errors";
 import morgan from "morgan";
 
 // Database and Authentication
-import connectDB from "./db/connect.js"; 
+import connectDB from "./db/connect.js";
 
 // Routers
 import authRouter from "./routes/authRoutes.js";
@@ -50,8 +50,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // Only for Deployment
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 //app.use(cors({  credentials: true }));
-
- app.use(cors({ origin: "http://localhost:4200", credentials: true }));
+//{origin: "http://localhost:4200", credentials: true}
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
