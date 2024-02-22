@@ -53,7 +53,7 @@ app.use(express.static(path.resolve(__dirname, "./client/build")));
 //{origin: "http://localhost:4200", credentials: true}
 app.use(
   cors({
-    origin: "https://job-tracking-backend.onrender.com",
+    origin: "https://job-tracking-frontend.vercel.app/",
     credentials: true,
   })
 );
