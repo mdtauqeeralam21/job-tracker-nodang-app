@@ -9,14 +9,12 @@ const register = async (req, res) => {
   const { name, email, password } = req.body;
 
 
-  //Missing values
   if (!name || !email || !password) {
     
     throw new BadRequestError("Please provide all values");
   }
 
 
-  //Already exists
   const userAlreadyExists = await User.findOne({email});
 
   if(userAlreadyExists){
@@ -24,22 +22,17 @@ const register = async (req, res) => {
   }
 
 
-  //if Correct data
   const user = await User.create({ name, email, password });
 
   const token = user.createToken();
-//create token
   res.cookie('token', token, {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
     secure: process.env.NODE_ENV === 'production',
   });
-//status code
   res.status(StatusCodes.CREATED).json({
     user: {
       email: user.email,
-      lastName: user.lastName,
-      location: user.location,
       name: user.name
     }
   });
@@ -80,19 +73,19 @@ const login = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { email, name, lastName, location} = req.body;
+  const { email, name, lastName, location, skills } = req.body;
 
-  if(!email || !name || !lastName || !location) {
+  if (!email || !name || !lastName || !location || !skills) {
     throw new BadRequestError("Please provide all values");
   }
 
-  const user = await User.findOne({_id: req.user.userId});
+  const user = await User.findOne({ _id: req.user.userId });
 
-  // Sanitize the inputs before saving the updated info in the user
   user.email = xssFilters.inHTMLData(email);
   user.name = xssFilters.inHTMLData(name);
   user.lastName = xssFilters.inHTMLData(lastName);
   user.location = xssFilters.inHTMLData(location);
+  user.skills = skills;
 
   await user.save();
 
@@ -104,9 +97,9 @@ const updateUser = async (req, res) => {
     secure: process.env.NODE_ENV === 'production',
   });
 
-  res.status( StatusCodes.OK ).json({ 
-    user, 
-    location: user.location 
+  res.status(StatusCodes.OK).json({ 
+    user,
+    skills
   });
 };
 

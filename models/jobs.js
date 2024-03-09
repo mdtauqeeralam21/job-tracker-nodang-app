@@ -16,7 +16,7 @@ const JobSchema = new Schema(
     },
     status: {
       type: String,
-      enum: [ "pending", "interview", "extended","declined"],
+      enum: ["pending", "interview", "extended", "declined"],
       default: "pending",
     },
     jobType: {
@@ -29,10 +29,24 @@ const JobSchema = new Schema(
       default: "my city",
       required: true,
     },
+    jobLink: {
+      type: String,
+    },
+    jobDescription: {
+      type: String,
+    },
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: [true, "Please provide the User"],
+    },
+    isReferral: {
+      type: Boolean,
+      default: false,
+    },
+    isRecruiterCall: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

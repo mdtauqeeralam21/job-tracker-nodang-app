@@ -6,40 +6,33 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 
-// express-async-errors
 import "express-async-errors";
 
 import morgan from "morgan";
 
-// Database and Authentication
 import connectDB from "./db/connect.js";
 
-// Routers
 import authRouter from "./routes/authRoutes.js";
 import jobsRouter from "./routes/jobsRoutes.js";
 
-//Reminder
-import {
-  createReminder,
-  getRemindersByUser,
-} from "./controllers/reminderController.js";
-
-// Middleware
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import authenticateUser from "./middleware/authenticate.js";
 
-// Deployment
 import path from "path";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
-// Security Packages
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 
-// Cookie Parser
 import cookieParser from "cookie-parser";
+import { handleReminder} from "./controllers/reminderController.js";
+import {
+  resetPassword,
+  verifyOTP,
+  forgotPassword,
+} from "./controllers/passwordController.js";
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
@@ -47,34 +40,12 @@ if (process.env.NODE_ENV !== "production") {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Only for Deployment
 app.use(express.static(path.resolve(__dirname, "./client/build")));
-//app.use(cors({  credentials: true }));
-//{origin: "http://localhost:4200", credentials: true}
-// app.use(
-//   cors({
-//     origin: "https://job-tracking-frontend.vercel.app/",
-//     credentials: true,
-//   })
-//);
 
-
-const corsOptions = {
-  origin: 'https://job-tracking-frontend.vercel.app',
-  credentials: true
-};
-
-app.use(cors(corsOptions));
-
-// Additional CORS handling for preflight OPTIONS requests
-app.options('*', cors(corsOptions));
-
-
-//====================================
+app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// Use security packages for Express app
 app.use(helmet());
 app.use(mongoSanitize());
 
@@ -85,10 +56,13 @@ app.get("/api/v1", (req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/jobs", authenticateUser, jobsRouter);
 
-app.post("/api/v1/reminders", authenticateUser, createReminder); // Create a new reminder
-app.get("/api/v1/reminders/:userId", getRemindersByUser);
+app.post("/api/v1/remind", handleReminder);
 
-// Only for Deployment
+
+app.post("/api/v1/forgotpassword", forgotPassword);
+app.post("/api/v1/resetpassword", resetPassword);
+app.post("/api/v1/verifyotp", verifyOTP);
+
 app.get("*", function (request, response) {
   response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
 });
