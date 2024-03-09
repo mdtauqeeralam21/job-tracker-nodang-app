@@ -48,7 +48,7 @@ const handleReminder = async (req, res) => {
 
   const scheduledJob = schedule.scheduleJob(cronSchedule, () => {
     const mailOptions = {
-      from: "jonhmiketest22@gmail.com",
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Job Reminder",
       html: reminderMessage,

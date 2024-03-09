@@ -71,17 +71,17 @@ UserSchema.methods.comparePassword = async function (candidatePassword) {
   return isMatch;
 }
 
-// Method to generate reset password OTP and store it in the user document
+
 UserSchema.methods.generateResetPasswordOTP = function () {
   const otp = otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
   this.resetPasswordToken = otp;
   const expirationTime = new Date();
-  expirationTime.setMinutes(expirationTime.getMinutes() + 10); // Adding 10 minutes
+  expirationTime.setMinutes(expirationTime.getMinutes() + 10);
   
   this.resetPasswordExpires = expirationTime;
 }
 
-// Method to send reset password OTP to user's email
+
 UserSchema.methods.sendResetPasswordOTPEmail = async function () {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
