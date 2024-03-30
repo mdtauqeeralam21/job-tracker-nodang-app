@@ -42,7 +42,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 
-app.use(cors({ origin: "https://job-tracking-client.vercel.app/", credentials: true }));
+app.use(cors({ origin: "https://job-tracking-client.vercel.app", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
